@@ -349,7 +349,7 @@ export default defineConfig({
 ### vite天生就对CSS文件的直接处理
 
 - vite在读取到mainjs中引用到了Index.css
-- 直接去使用fs模块去读取indexcss中文件内容
+- 直接去使用fs模块去读取index.css中文件内容
 - 直接创建一个style标签，将index.css中文件内容直接copy进style标签里
 - 将style标签插入到index.html的head中
 - 将该CSS文件中的内容直接替换为js脚本(方便热更新或者css模块化)，同时设置Content-Type为js 从而让测览器以JS脚本的形式来执行该CSS后缀的文件
