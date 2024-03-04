@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function Lucky(n) {
+        let top = 1, under = 1
+        if (n > 999) {
+          return '1.000000'
+        } else if (n <= 0) {
+          return '0.000000'
+        } else if (n <= 10) {
+          for (let i = 0; i < n; i++) {
+            top *= (990 - i);
+            under *= (1000 - i);
+          }
+          return 1 - top / under
+        } else {
+          for (let i = 0; i < 10; i++) {
+            top *= (1000 - n - i);
+            under *= (1000 - i);
+          }
+          return 1 - top / under
+        }
+      }
+      console.log(Lucky(10));
+  </script>
+</body>
+</html>

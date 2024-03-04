@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function port() {
+            let tempArr = Array.from(arguments)
+            let rangeArr = []
+            let portArr = []
+            let num = 0,endNum = 0
+            tempArr.forEach(item =>{
+                if(item.indexOf('-') !== -1) {
+                    rangeArr.push(item)
+                }else {
+                    portArr.push(item)
+                }
+            })
+            rangeArr = rangeArr.sort((a,b) => {
+                return a - b
+            })
+            console.log(rangeArr);
+            portArr = portArr.sort((a,b) => {
+                return b - a
+            })
+            if(portArr[0]>65535 || portArr[0] < 1) {
+                return false
+            }
+        }
+        port('90-234','80-90','30','40')
+    </script>
+</body>
+</html>

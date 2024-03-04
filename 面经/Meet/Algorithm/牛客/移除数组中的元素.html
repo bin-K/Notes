@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>移除数组中的元素</title>
+</head>
+
+<body>
+  <script>
+    // 不改变原数组
+    function remove(arr, item) {
+      let arrNew = []
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] !== item) {
+          arrNew.push(arr[i])
+        }
+      }
+      return arrNew
+    }
+    // 改变原数组
+    // function removeWithoutCopy(arr, item) {
+    //    while (arr.indexOf(item) !== -1) {
+    //     arr.splice(arr.indexOf(item), 1)
+    //   }
+    //   return arr
+    // }
+    function removeWithoutCopy(arr,item){
+      arr = Array.from(new Set(arr))
+      arr.forEach((element,index) => {
+        if(element === item){
+          arr.splice(index,1)
+        }
+      });
+      return arr
+    }
+    console.log(removeWithoutCopy([1, 2, 2, 3, 4, 2, 2], 2));
+  </script>
+</body>
+
+</html>

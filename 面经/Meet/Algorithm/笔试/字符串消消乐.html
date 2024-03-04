@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function clear(str) {
+            // 设置两个指针，开始的时候一个指向字符串第一个字符，第二个指向第二个字符
+            let x = 0, y = 1
+            let fisrt = str[x]
+            let end = str[y]
+
+            for (let i = 1; i < str.length; i++) {
+                if (fisrt !== end) {
+                    if (y - x >= 3) {
+
+                    } else if (y - x == 2) {
+                        console.log(y);
+                        console.log(x);
+                        str = str.split('')
+                        str.splice(x, y - x)
+                        str = str.join('')
+                        console.log(str);
+                    } else {
+                        x = i
+                        first = str[x]
+                        end = str[x + 1]
+                    }
+                } else {
+                    y = i + 1
+                    end = str[y]
+                }
+            }
+            return str == '' ? 'SANGFOR' : str
+        }
+        console.log(clear('assd'));
+    </script>
+</body>
+
+</html>

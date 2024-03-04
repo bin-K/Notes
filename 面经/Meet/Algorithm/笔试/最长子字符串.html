@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function findLongestSubstr(str) {
+      let length = 0,firstLength = 0
+      let map = new Map()
+      let str1 = str[0]
+      let flag = false
+      let arr = []
+      for (let i = 0; i < str.length; i++) {
+        if(str[i].indexOf(str1) == -1) {
+          if (str[i].toLowerCase() === str1.toLowerCase()){
+            str1 = str[i]
+            continue
+          }
+          str1 = str[i]
+          length = i
+          if(!flag){
+            map.set(str.slice(0, i),length)
+            firstLength = length
+            flag = true
+          }else {
+            map.set(str.slice(firstLength,i),length-firstLength)
+            firstLength = length
+          }
+        }
+        if (i == str.length - 1) {
+          map.set(str.slice(firstLength), str.length - firstLength)
+        }
+      }
+      arr = Array.from(map).sort((a,b) => {
+        return b[1] - a[1]
+      })
+      return arr[0][0]
+    }
+    console.log(findLongestSubstr("llLLLoop"));
+  </script>
+</body>
+
+</html>

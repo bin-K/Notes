@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 最后一个只出现一次的字符窜
+    /**
+     * 思路：从字符串前找和从后开始找返回的下标值时是一样的话说明只出现一次
+     *  寻找出所有的单个字符  组成一个数组  输出数组最后一个
+     */
+    function lastUniqueChar(str) {
+      if (!str) return ""
+      let arr = [];
+      for (let i = 0; i < str.length; i++) {
+        if (str.indexOf(str[i]) === str.lastIndexOf(str[i])) {
+          arr.push(str[i]);
+        }
+      }
+      if (arr.length == 0) return "";  //如果没有单个的字符串但回空
+      return arr[arr.length - 1];
+    }
+    console.log(lastUniqueChar('shoppee'));
+  </script>
+</body>
+
+</html>

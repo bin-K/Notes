@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    table {
+      font-size: 14px;
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    table td {
+      border: 1px solid #e1e1e1;
+      padding: 0;
+      height: 30px;
+      text-align: center;
+    }
+
+    table td.current {
+      background: #1890ff;
+    }
+  </style>
+</head>
+
+<body>
+  <div >
+    <table>
+      <tbody>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td class="current"></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    
+    document.onkeydown = event =>{
+      if(!event) return
+      var code = event.keyCode || ''
+      if(!{'37':1,'38':1,'39':1,'40':1}[code]) return
+      var tbody = document.querySelector('tbody')
+      var current = document.querySelector('.current')
+      console.log(current);
+      current.className = ''
+      if(code == 37) {
+        if (current.cellIndex == 0) {
+          current = current.parentNode.children[8]
+          current.className = 'current'
+        } else {
+          current.previousElementSibling.className = 'current'
+        }
+      }else if(code == 38) {
+        if(current.parentNode.rowIndex == 0) {
+          current = tbody.children[8].children[current.cellIndex]
+          current.className = 'current'
+        }else {
+          current = current.parentNode.previousElementSibling.children[current.cellIndex]
+          current.className = 'current'
+        }
+      }else if(code == 39) {
+        if(current.cellIndex == 8) {
+          current = current.parentNode.children[0]
+          current.className = 'current'
+        }else {
+          current.nextElementSibling.className = 'current'
+        }
+      }else if(code == 40) {
+        if(current.parentNode.rowIndex == 8) {
+          current = tbody.children[0].children[current.cellIndex]
+          current.className = 'current'
+        }else {
+          current = current.parentNode.nextElementSibling.children[current.cellIndex]
+          current.className = 'current'
+        } 
+      }
+    }
+  </script>
+</body>
+
+</html>

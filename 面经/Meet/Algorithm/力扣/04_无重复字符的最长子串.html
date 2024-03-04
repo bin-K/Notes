@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    var lengthOfLongestSubstring = function (s) {
+        if (s == '') return 0
+        var arr = []
+        var length = 0
+        var isfirst = true;
+        for (let i = 0; i < s.length; i++) {
+          if (arr.indexOf(s[i]) === -1) {
+            arr.push(s[i])
+          } else {
+            if (isfirst) {
+              length = arr.length
+              arr = []
+              arr.push(s[i])
+              isfirst = false
+            }
+            if (!isfirst) {
+              if (length > arr.length) {
+                arr = []
+                arr.push(s[i])
+              } else {
+                length = arr.length
+                arr = []
+                arr.push(s[i])
+              }
+            }
+          }
+        }
+        return arr.length > length ? arr.length : length
+      };
+    console.log(lengthOfLongestSubstring("dvdf"));
+  </script>
+</body>
+
+</html>

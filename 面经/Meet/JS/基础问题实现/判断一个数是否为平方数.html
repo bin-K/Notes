@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function test(num) {
+      for (let i = 0; i < num/2; i++) {
+        if(i*i === num) {
+          return true
+        }
+      }
+      return false
+    }
+    console.log(test(81));
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>求背景图片左边到盒子左边框外侧的距离</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .box {
+      width: 100px;
+      height: 200px;
+      background: pink;
+      padding: 100px;
+      border:80px solid blue;
+      background: url('./img/logo.png') no-repeat -50px 0;
+      /* 背景图片起始源的位置，最开始是以padding-box来渲染的，这个改为content-box，本身内容开始渲染 */
+      background-origin: content-box;
+      /* 最后的答案是130px，最开始以padding-box开始渲染时，距离盒子左边框外侧只有border的宽度80px
+        改为content-box开始渲染时，距离时border的80px加上padding的100px，为180px，但是背景图片进行
+        了定位，又向左移动了50px，所以最后是130px
+      */
+    }
+  </style>
+</head>
+<body>
+  <div class="box"></div>
+</body>
+</html>

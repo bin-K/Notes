@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>js综合</title>
+</head>
+<body>
+  <script>
+
+    /*
+      首先题目会进行函数和变量的提升
+      function Foo(){
+      getName = function(){console.log(1);}
+      return this
+    }
+    变量的提升是变量名的提升,函数提升是整体的提升
+    变量与函数同名，提升以函数为准
+    // var getName
+    function getName(){console.log(5);}
+    */
+
+    function Foo(){
+      getName = function(){console.log(1);}
+      return this
+    }
+    Foo.getName = function(){console.log(2);}
+    Foo.prototype.getName = function(){console.log(3);}
+    // 在变量提升之后，此时5的函数会被4给替换，因为前面的getName在变量提升之后是5函数
+    var getName = function(){console.log(4);}
+    function getName(){console.log(5);}
+
+    // 请写出以下的输出结果
+    Foo.getName(); // 2
+    getName();//4
+    // 这里的执行顺序是先执行Foo函数，也就是(Foo()).getName(),
+    // Foo执行后，函数中的getName没有变量修饰符，也就是会在全局变量中找，那么此时全局变量中的getName被1函数赋值了
+    // Foo返回了一个this值,this指向window,最后的变成window.getName(),此时getName是全局函数,因此会执行,输出1
+    Foo().getName(); //1 
+    // 此时getName已经被修改了
+    getName() //1
+    new Foo.getName(); //2 new (Foo.getName)() ==> new (function(){console.log(2);})() 会执行该函数并产生一个实例对象
+    // new Foo()是一个实例对象,此时类的原型对象上有一个getName函数,输出
+    new Foo().getName()//3
+
+    new new Foo().getName() //3 new ((new Foo()).getName)() ==> new (function(){console.log(3);})() 执行该函数
+  
+
+    // 类似题目
+    function A() {
+        console.log(1);
+      }
+      function Fn() {
+        A = function () {
+          console.log(2);
+        }
+        return this;
+      }
+      Fn.A = A;
+      Fn.prototype = {
+        A: () => {
+          console.log(3);
+        }
+      };
+      A();//1
+      Fn.A();//1
+      Fn().A();//2
+      new Fn.A();//1
+      new Fn().A();//3
+      new new Fn().A();//报错
+  
+  </script>
+</body>
+</html>

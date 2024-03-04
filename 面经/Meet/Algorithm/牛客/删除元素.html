@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>删除数组的最后一个元素</title>
+</head>
+
+<body>
+  <script>
+    /**
+     * 删除数组 arr 最后一个元素。不要直接修改数组 arr，结果返回新的数
+     * 示例1
+        输入：
+          [1, 2, 3, 4]
+        输出：
+          [1, 2, 3]
+     */
+
+     //利用slice
+      function truncate(arr) {
+        return arr.slice(0, -1);
+      }
+      //利用filter
+      function truncate(arr) {
+        return arr.filter(function (v, i, ar) {
+          return i !== ar.length - 1;
+        });
+      }
+      //利用push.apply+pop
+      function truncate(arr) {
+        var newArr = [];
+        [].push.apply(newArr, arr);
+        newArr.pop();
+        return newArr;
+      }
+      //利用join+split+pop    注意！！！：数据类型会变成字符型
+      function truncate(arr) {
+        var newArr = arr.join().split(',');
+        newArr.pop();
+        return newArr;
+      }
+      //利用concat+pop
+      function truncate(arr) {
+        var newArr = arr.concat();
+        newArr.pop();
+        return newArr;
+      }
+      //普通的迭代拷贝
+      function truncate(arr, item) {
+        var newArr = [];
+        for (var i = 0; i < arr.length - 1; i++) {
+          newArr.push(arr[i]);
+        }
+        return newArr;
+      }
+      
+      /**
+       * 描述
+删除数组 arr 第一个元素。不要直接修改数组 arr，结果返回新的数组
+       */
+      //利用slice
+        function curtail(arr) {
+          return arr.slice(1);
+        }
+        //利用filter
+        function curtail(arr) {
+          return arr.filter(function (v, i) {
+            return i !== 0;
+          });
+        }
+        //利用push.apply+shift
+        function curtail(arr) {
+          var newArr = [];
+          [].push.apply(newArr, arr);
+          newArr.shift();
+          return newArr;
+        }
+        //利用join+split+shift    注意！！！：数据类型会变成字符型
+        function curtail(arr) {
+          var newArr = arr.join().split(',');
+          newArr.shift();
+          return newArr;
+        }
+        //利用concat+shift
+        function curtail(arr) {
+          var newArr = arr.concat();
+          newArr.shift();
+          return newArr;
+        }
+        //普通的迭代拷贝
+        function curtail(arr) {
+          var newArr = [];
+          for (var i = 1; i < arr.length; i++) {
+            newArr.push(arr[i]);
+          }
+          return newArr;
+        }
+  </script>
+</body>
+
+</html>

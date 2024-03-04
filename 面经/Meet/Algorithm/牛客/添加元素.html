@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>添加元素</title>
+</head>
+
+<body>
+  <script>
+
+    /**
+     * 描述
+在数组 arr 末尾添加元素 item。不要直接修改数组 arr，结果返回新的数组
+     */
+    /**
+   * 普通的迭代拷贝
+   * @param arr
+   * @param item
+   * @returns {Array}
+   */
+    var append = function (arr, item) {
+      var length = arr.length,
+        newArr = [];
+
+      for (var i = 0; i < length; i++) {
+        newArr.push(arr[i]);
+      }
+
+      newArr.push(item);
+
+      return newArr;
+    };
+
+    /**
+     * 使用slice浅拷贝+push组合
+     * @param arr
+     * @param item
+     * @returns {Blob|ArrayBuffer|Array.<T>|string}
+     */
+    var append2 = function (arr, item) {
+      var newArr = arr.slice(0);  // slice(start, end)浅拷贝数组
+      newArr.push(item);
+      return newArr;
+    };
+
+    /**
+     * 使用concat将传入的数组或非数组值与原数组合并,组成一个新的数组并返回
+     * @param arr
+     * @param item
+     * @returns {Array.<T>|string}
+     */
+    var append3 = function (arr, item) {
+      return arr.concat(item);
+    }
+
+    /**
+     * 描述
+        在数组 arr 开头添加元素 item。不要直接修改数组 arr，结果返回新的数组
+     */
+    //利用concat
+    function prepend(arr, item) {
+      return [item].concat(arr);
+    }
+    //使用push.apply
+    function prepend(arr, item) {
+      var newArr = [item];
+      [].push.apply(newArr, arr);
+      return newArr;
+    }
+    //利用slice+unshift/splice
+    function prepend(arr, item) {
+      var newArr = arr.slice(0);
+      newArr.unshift(item);//newArr.splice(0,0,item);
+      return newArr;
+    }
+    //使用join+split+unshift/splice组合
+    function prepend(arr, item) {
+      var newArr = arr.join().split(',');
+      newArr.unshift(item);//newArr.splice(0,0,item);
+      return newArr;
+    }
+    //普通的迭代拷贝
+    function prepend(arr, item) {
+      var newArr = [];
+      for (var i = 0; i < arr.length; i++) {
+        newArr.push(arr[i]);
+      }
+      newArr.unshift(item);
+      return newArr;
+    }
+/**
+     * 描述
+    在数组 arr 的 index 处添加元素 item。不要直接修改数组 arr，结果返回新的数组
+     */
+    //利用slice+concat
+      function insert(arr, item, index) {
+        return arr.slice(0, index).concat(item, arr.slice(index));
+      }
+      //利用concat +splice
+      function insert(arr, item, index) {
+        var newArr = arr.concat();
+        newArr.splice(index, 0, item);
+        return newArr;
+      }
+      //利用slice+splice
+      function insert(arr, item, index) {
+        var newArr = arr.slice(0);
+        newArr.splice(index, 0, item);
+        return newArr;
+      }
+      //利用push.apply+splice
+      function insert(arr, item, index) {
+        var newArr = [];
+        [].push.apply(newArr, arr);
+        newArr.splice(index, 0, item);
+        return newArr;
+      }
+      //普通的迭代拷贝
+      function insert(arr, item, index) {
+        var newArr = [];
+        for (var i = 0; i < arr.length; i++) {
+          newArr.push(arr[i]);
+        }
+        newArr.splice(index, 0, item);
+        return newArr;
+      }
+  </script>
+</body>
+
+</html>

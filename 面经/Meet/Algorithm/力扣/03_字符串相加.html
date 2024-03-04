@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符串相加</title>
+</head>
+
+<body>
+  <script>
+    /**
+    题目
+     * 给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和。
+      提示：
+        num1 和num2 的长度都小于 5100
+        num1 和num2 都只包含数字 0-9
+        num1 和num2 都不包含任何前导零
+        你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式
+     */
+    /**
+     *思路
+     定义两个指针 i和 j 分别指向num1和 num2的末尾即最低位，同时定义一个变量add 维护
+     当前是否有进位，然后从末尾到开头逐位相加即可。你可能会想两个数字位数不同怎么处理，
+     这里我们统一在指针当前下标处于负数的时候返回 0，等价于对位数较短的数字进行了补零操作，
+     这样就可以除去两个数字位数不同情况的处理
+     */
+    var addStrings = function (num1, num2) {
+      let i = num1.length - 1,
+        j = num2.length - 1,
+        add = 0;
+      const ans = [];
+      while (i >= 0 || j >= 0 || add != 0) {
+        // 如果位数不同自动补零
+        const x = i >= 0 ? num1.charAt(i) - '0' : 0;
+        const y = j >= 0 ? num2.charAt(j) - '0' : 0;
+        // 
+        const result = x + y + add;
+        // 对10取余得到当前位数的值，也就是最终的结果
+        ans.push(result % 10);
+        // 除10再向下取整判断是否有进位
+        add = Math.floor(result / 10);
+        // 控制进行相加的位数
+        i -= 1;
+        j -= 1;
+      }
+      // 将数组中所有数值拼接就是最终的结果
+      return ans.reverse().join('');
+    };
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function formatDate(t,exp) {
+            let date = t.split(' ')[0]
+            let time = t.split(' ')[1]
+            console.log(date);
+            console.log(time);
+            let dateArr = date.split('-')
+            console.log(dateArr);
+            let timeArr = time.split(':')
+            console.log(timeArr);
+            for(let i = 0;i < exp.length;i++) {
+                // 替换年份
+                if(exp[i] == 'Y') {
+                    exp = exp.replace(exp[i],dateArr[0])
+                }else if(exp[i] == 'm') {
+                    exp = exp.replace(exp[i],dateArr[1])
+                }else if(exp[i] == 'd') {
+                    exp = exp.replace(exp[i],dateArr[2])
+                }else if(exp[i] == 'H') {
+                    exp = exp.replace(exp[i],timeArr[0])
+                }else if(exp[i] == 'i') {
+                    exp = exp.replace(exp[i],timeArr[1])
+                }else if(exp[i] == 's') {
+                    exp = exp.replace(exp[i],timeArr[2])
+                }
+            }
+            return exp
+        }
+        console.log(formatDate('2008-08-08 20:00:01','H--i--s Y--m--d'));
+    </script>
+</body>
+</html>
