@@ -15,7 +15,7 @@
  *    2.用完闭包要及时销毁
  */
 
-
+//#region  1
 // function fun() {
 //   var count = 1;
 //   // 此时已经形成闭包了
@@ -26,7 +26,9 @@
 //   fun2()
 // }
 // fun()
+//#endregion
 
+//#region 2
 // function fun() {
 //   var count = 1;
 //   return function () {
@@ -38,6 +40,10 @@
 // var fun2 = fun()
 // fun2() //2
 // fun2() //3
+
+//#endregion 
+
+//#region 3
 
 //输出情况
 function fun(n, o) {
@@ -79,7 +85,9 @@ var b = fun(0).fun(1).fun(2).fun(3) //undefined, 0 , 1 , 2
 var c = fun(0).fun(1)
 c.fun(2)
 c.fun(3) //undefined, 0 ,1 , 1
+//#endregion
 
+//#region 4
 var test = (function (i) {
   return function () {
     alert(i *= 2);
@@ -98,6 +106,9 @@ test(5);
  * 找到对应的i，i = 2*2 = 4，并且这里形成了闭包，因为返回函数中对外面函数的变量
  * 还有引用，所以外面函数中的变量i在函数执行完之后并不会被销毁
  */
+//#endregion
+
+//#region 5
 // var a = 0,
 //   b = 0;
 // function A(a) {
@@ -116,7 +127,9 @@ test(5);
  * A(2)执行，此时函数已经被更改了，执行的是里面的那个函数，因为还用到变量a，自身没有a，根据作用域链
  * 找到外面函数的局部变量a，此时形成了闭包，此时 a = 2 ，b 的值由传入的值决定 ，因此弹出 '4'
  */
+//#endregion
 
+//#region  6
 var x = 2;
 var y = {
   x: 3,
@@ -141,6 +154,7 @@ var y = {
 */
 var m = y.z;
 m(4);
+
 /*
   y.z(5)调用的函数的是y中的z,第一个函数的this指向是window,返回的函数this指向的是y,因为此时执行的函数的是z
   上面的函数执行完之后,形成了闭包,此时全局的x为16,函数内部的x为7
@@ -151,3 +165,123 @@ m(4);
 y.z(5);
 // 经过两次执行,全局的x已经被改为了16,y中的x被改为了15
 console.log(x, y.x);
+
+//#endregion
+
+
+//#region 7
+for (var i = 0; i < 5; i++) {
+    setTimeout(function() {
+        console.log(new Date, i);
+    }, 1000);
+}
+
+console.log(new Date, i);
+// 5,5,5,5,5,5
+
+// 用箭头表示其前后的两次输出之间有 1 秒的时间间隔，
+// 而逗号表示其前后的两次输出之间的时间间隔可以忽略，代码实际运行的结果该如何描述？
+// 5 -> 5,5,5,5,5
+
+// 如果期望代码的输出变成：5 -> 0,1,2,3,4，该怎么改造代码？
+// 闭包
+for (var i = 0; i < 5; i++) {
+    (function(j) {  // j = i
+        setTimeout(function() {
+            console.log(new Date, j);
+        }, 1000);
+    })(i);
+}
+
+console.log(new Date, i);
+
+// 增补
+for (var i = 0; i < 5; i++) {
+    setTimeout(function(j) {
+        console.log(new Date, j);
+    }, 1000, i);
+}
+
+console.log(new Date, i);
+
+//  JS 中基本类型（Primitive Type）的参数传递是按值传递（Pass by Value）的特征
+// 利用了函数作用域
+var output = function (i) {
+    setTimeout(function() {
+        console.log(new Date, i);
+    }, 1000);
+};
+
+for (var i = 0; i < 5; i++) {
+    output(i);  // 这里传过去的 i 值被复制了
+}
+
+console.log(new Date, i);
+
+/* 
+果期望代码的输出变成 0 -> 1 -> 2 -> 3 -> 4 -> 5，
+并且要求原有的代码块中的循环和两处 console.log 不变，该怎么改造代码？
+新的需求可以精确的描述为：代码执行时，立即输出 0，之后每隔 1 秒依次输出 1,2,3,4，
+循环结束后在大概第 5 秒的时候输出 5
+这里使用大概，是为了避免钻牛角尖的同学陷进去，因为 JS 中的定时器触发时机有可能是不确定的
+*/
+
+/* const tasks = [];
+for (var i = 0; i < 5; i++) {   // 这里 i 的声明不能改成 let，如果要改该怎么做？
+    ((j) => {
+        tasks.push(new Promise((resolve) => {
+            setTimeout(() => {
+                console.log(new Date, j);
+                resolve();  // 这里一定要 resolve，否则代码不会按预期 work
+            }, 1000 * j);   // 定时器的超时时间逐步增加
+        }));
+    })(i);
+}
+
+Promise.all(tasks).then(() => {
+    setTimeout(() => {
+        console.log(new Date, i);
+    }, 1000);   // 注意这里只需要把超时设置为 1 秒
+}); */
+
+const tasks = []; // 这里存放异步操作的 Promise
+const output = (i) => new Promise((resolve) => {
+    setTimeout(() => {
+        console.log(new Date, i);
+        resolve();
+    }, 1000 * i);
+});
+
+// 生成全部的异步操作
+for (var i = 0; i < 5; i++) {
+    tasks.push(output(i));
+}
+
+// 异步操作完成之后，输出最后的 i
+Promise.all(tasks).then(() => {
+    setTimeout(() => {
+        console.log(new Date, i);
+    }, 1000);
+});
+
+// async await
+
+// 模拟其他语言中的 sleep，实际上可以是任何异步操作
+const sleep = (timeountMS) => new Promise((resolve) => {
+    setTimeout(resolve, timeountMS);
+});
+
+(async () => {  // 声明即执行的 async 函数表达式
+    for (var i = 0; i < 5; i++) {
+        if (i > 0) {
+            await sleep(1000);
+        }
+        console.log(new Date, i);
+    }
+
+    await sleep(1000);
+    console.log(new Date, i);
+})();
+
+
+//#endregion
