@@ -779,72 +779,91 @@ var a = 2;
 
 
 //#region 手写new
-function New(fn, ...args) {
-  // 创建一个空的对象并链接到构造函数的原型，使它能访问原型中的属性
+;(() => {
+  function New(fn, ...args) {
+    // 创建一个空的对象并链接到构造函数的原型，使它能访问原型中的属性
   const instance = Object.create(fn.prototype)
   // 使用apply改变构造函数中this的指向实现继承，使obj能访问到构造函数中的属性
   const res = fn.apply(instance, args)
   // 优先返回构造函数返回的对象
   return typeof res === 'object' || typeof res === 'function' ? res : instance
-}
-
-function Person (name) {
-  this.name = name
-}
-Person.prototype.eat = function () {
-  console.log('Eatting')
-}
-
-var lindaidai = New(Person, 'LinDaiDai')
-console.log(lindaidai) // Person{ name: 'LinDaiDai' }
-lindaidai.eat() // 'Eatting'
-//#endregion
-
-//#region 手写Call, 手写Apply 都一样
-Function.prototype.Call = function (context, ...args) {
-  if (!context || context === null) {
-    context = window
   }
 
-  let fn = Symbol()
-
-  context[fn] = this
-
-  const res = context[fn](...args)
-
-  delete context[fn]
-
-  return res
-}
-
-var obj = {
-  name: "objName"
-};
-
-function consoleInfo(sex, weight) {
-  console.log(this.name, sex, weight);
-}
-var name = "globalName";
-consoleInfo.Call(obj, "man", 100); // 'objName' 'man' 100
-consoleInfo.Call(obj, "woman", 120); // 'objName' 'woman' 120
-//#endregion
-
-//#region 手写bind
-Function.prototype.Bind = function (context, ...args) {
-  if (!context || context === null) {
-    context = window
+  function Person (name) {
+    this.name = name
+  }
+  Person.prototype.eat = function () {
+    console.log('Eatting')
   }
 
-  let f = Symbol()
-  context[f] = this
-  return function (...args1) {
-    const res = context[f](...args, ...args1)
+  var lindaidai = New(Person, 'LinDaiDai')
+  console.log(lindaidai, 'New') // Person{ name: 'LinDaiDai' }
+  lindaidai.eat() // 'Eatting'
+})
+//#endregion
+
+//#region 手写Call, 手写Apply  手写Bind
+(() => {
+  Function.prototype.Call = (context, ...args) => {
+    if(!context) context = window
+
+    const f = Symbol()
+
+    context[f] = this
+
+    const res = context[f](...args)
+
+    delete context[f]
+
     return res
   }
-}
 
-consoleInfo.Bind(obj, "man", 100)(); // 'objName' 'man' 100
-consoleInfo.Bind(obj, "woman", 120)(); // 'objName' 'woman' 120
+  Function.prototype.Apply = (context, args) => {
+    if(!context) context = window
+
+    const f = Symbol()
+
+    context[f] = this
+
+    const res = context[f](args)
+
+    delete context[f]
+
+    return res
+  }
+
+  Function.prototype.Bind = (context, ...args) => {
+    if(!context) context = window
+
+    const f = Symbol()
+
+    context[f] = this
+
+    return function(...args1) {
+      const res = context[f](...args, ...args1)
+      return res
+    }
+  }
+
+  var obj = {
+    name: "objName"
+  };
+  var name = "globalName";
+
+  function consoleInfo(sex, weight) {
+    console.log(this.name, sex, weight, 'this指向 call apply bind');
+  }
+  consoleInfo("man", 100) // 'globalName' 'man' 100
+
+  consoleInfo.Call(obj, "man", 100); // 'objName' 'man' 100
+  consoleInfo.Call(obj, "woman", 120); // 'objName' 'woman' 120
+
+  consoleInfo.Apply(obj, ["man", 100]); // 'objName' 'man' 100
+  consoleInfo.Apply(obj, ["woman", 120]); // 'objName' 'woman' 120
+
+  consoleInfo.Bind(obj, "man", 100)(); // 'objName' 'man' 100
+  consoleInfo.Bind(obj, "woman", 120)(); // 'objName' 'woman' 120
+})()
 //#endregion
 
 

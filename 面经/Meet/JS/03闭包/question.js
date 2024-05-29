@@ -285,3 +285,51 @@ const sleep = (timeountMS) => new Promise((resolve) => {
 
 
 //#endregion
+
+//#region 防抖
+
+// debounce
+// 就是指触发事件后 n 秒后才执行函数，如果在 n 秒内又触发了事件，则会重新计算函数执行时间
+function debounce(fn, wait) {
+  let timer = null
+  return function () {
+    const _this = this
+    const args = arguments
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      fn.apply(_this, args)
+    }, wait)
+  }
+}
+//#endregion
+
+//#region 节流
+// throttle
+// 就是指连续触发事件但是在 n 秒中只执行一次函数
+function throttle(fn, delay) {
+  let curTime = Date.now()
+  return function () {
+    let nowTime = Date.now()
+    if (nowTime - curTime >= delay) {
+      curTime = Date.now()
+      return fn.apply(this, arguments)
+    }
+  }
+}
+
+function throttleSetTimeout(fn, delay) {
+  let timer = null
+  return function() {
+    const _this = this
+    const args = arguments
+    if(!timer) {
+        timer = setTimeout(() => {
+          timer = null
+          fn.apply(_this, args)
+        }, delay)
+    }
+  }
+}
+//#endregion
