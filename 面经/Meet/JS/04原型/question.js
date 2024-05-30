@@ -223,3 +223,47 @@ function inheritObject(o) {
   console.log(sub1.super, '寄生组合式继承 sub1.super') // prototype
 })()
 //#endregion
+
+//#region ES6 类
+/* 
+1） Class 类可以看作是构造函数的语法糖
+2） Class 类中定义的方法，都是定义在该构造函数的原型上
+3）使用static关键字，作为静态方法（静态方法，只能通过类调用，实例不能调用）
+
+了避免与访问器属性冲突，在构造函数中使用了一个带有下划线前缀的私有属性_myProperty。这是一种常见的命名约定，用于表示该属性应该被视为私有的，以防止直接访问
+
+*/
+;(() => {
+  function Foo() {
+    getName = function() {
+      console.log(1)
+    };
+    return this;
+  }
+  // 静态方法
+  Foo.getName = function() {
+    console.log(2)
+  };
+  // 成员方法
+  Foo.prototype.getName = function() {
+    console.log(3)
+  };
+
+  // 函数提升优先级高于变量提升，且不会被同名变量声明时覆盖，但是会被同名变量赋值后覆盖
+  var getName = function() {
+    console.log(4)
+  };
+  function getName() {
+    console.log(5)
+  }
+
+  //请写出以下输出结果：
+  Foo.getName(); // 2
+  getName(); // 4
+  // Foo().getName(); // undefined is not a function
+  getName(); // 4
+  new Foo.getName(); // 2
+  new Foo().getName(); // 3
+  new new Foo().getName(); // 3
+})()
+

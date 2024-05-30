@@ -323,3 +323,90 @@ function inheritObject(o) {
 })()
 //#endregion
 
+//#region promise
+;(() => {
+  class MyPromise {
+    constructor(excutor) {
+      this.state = 'pending'
+      this.resolveTask = []
+      this.rejectTask = []
+
+      const reslove = value => {
+        if(this.state !== 'pending') return
+        this.state = 'fullfilled'
+        this.data = value
+        setTimeout(() => {
+          this.resolveTask.forEach(cb => cb())
+        })
+      }
+
+      const reject = error => {
+        if(this.state !== 'pending') return
+        this.state = 'rejected'
+        this.error = error
+        setTimeout(() => {
+          this.rejectTask.forEach(cb => cb())
+        })
+      } 
+
+      try {
+        excutor(reslove, reject)
+      } catch(error) {
+        reject(error)
+      }
+    }
+
+    then(resolveCallback, rejectCallback) {
+      return new MyPromise((reslove, reject) => {
+        this.resolveTask.push(() => {
+          const res = resolveCallback(this.data)
+          if(res instanceof MyPromise) {
+            res.then(reslove, reject)
+          } else {
+            reslove(res)
+          }
+        })
+        this.rejectTask.push(() => {
+          const res = rejectCallback(this.error)
+          if(res instanceof MyPromise) {
+            res.then(reslove, reject)
+          } else {
+            reslove(res)
+          }
+        })
+      })
+    }
+    catch(rejectCallback) {
+      return new MyPromise((reslove, reject) => {
+        this.rejectTask.push(() => {
+          const res = rejectCallback(this.error)
+          if(res instanceof MyPromise) {
+            res.then(reslove, reject)
+          } else {
+            reslove(res)
+          }
+        })
+      })
+    }
+  }
+
+   // 打印结果：依次打印1、2
+  new MyPromise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(1);
+    }, 500);
+  }).then(
+    res => {
+      console.log(res);
+      return new MyPromise(resolve => {
+        setTimeout(() => {
+          resolve(2);
+        }, 1000);
+      });
+    }
+  ).then(data => {
+    console.log(data);
+  });
+})()
+
+//#endregion
