@@ -482,8 +482,9 @@ function inheritObject(o) {
 			console.log(data)
 		})
 })()
-
 //#endregion
+
+//#region 手写async await
 ;(() => {
 	function asyncToGenerator(generatorFunc) {
 		return function () {
@@ -536,3 +537,71 @@ function inheritObject(o) {
 
 	test().then((res) => console.log(res))
 })()
+//#endregion
+
+//#region 深拷贝1
+;(() => {
+	let obj = {
+		a: 100,
+		b: [10, 20, 30],
+		c: {
+			x: 10,
+		},
+		d: /^\d+$/,
+	}
+	function deepClone(obj) {
+		if (obj === null) return null
+		if (typeof obj !== 'object') return obj
+		if (obj instanceof Function) return obj
+		if (obj instanceof RegExp) {
+			return new RegExp(obj)
+		}
+		if (obj instanceof Date) {
+			return new Date(obj)
+		}
+		const newObj = new obj.constructor()
+		for (key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				newObj[key] = deepClone(obj[key])
+			}
+		}
+		return newObj
+	}
+
+	let obj1 = deepClone(obj)
+	obj1.a = 200
+	console.log(obj, obj1)
+})()
+//#endregion
+
+//#region 深拷贝2
+;() => {
+	let obj = {
+		a: 100,
+		b: [10, 20, 30],
+		c: {
+			x: 10,
+		},
+		d: /^\d+$/,
+	}
+	function deepClone(target, hash = new WeakMap()) {
+		const isObject = (obj) => typeof obj === 'object' || obj === null
+		if (!isObject(target)) return target
+		if (hash.get(target)) return target
+		const newObj = Array.isArray(target) ? [] : {}
+		hash.set(target, newObj)
+		for (key in target) {
+			if (target.hasOwnProperty(key)) {
+				newObj[key] = deepClone(target[key], hash)
+			} else {
+				newObj[key] = target[key]
+			}
+		}
+		return newObj
+	}
+
+	let obj1 = deepClone(obj)
+	obj1.a = 200
+	console.log(obj, obj1)
+}
+//#endregion
