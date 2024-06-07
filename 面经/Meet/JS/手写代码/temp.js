@@ -431,7 +431,7 @@ function inheritObject(o) {
 							result[i] = res
 							index++
 							if (index === promises.length) {
-								reslove(result)
+								resolve(result)
 							}
 						},
 						(err) => {
