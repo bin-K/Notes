@@ -585,7 +585,7 @@ function inheritObject(o) {
 		d: /^\d+$/,
 	}
 	function deepClone(target, hash = new WeakMap()) {
-		const isObject = (obj) => typeof obj === 'object' || obj === null
+		const isObject = (obj) => typeof obj === 'object' && obj !== null
 		if (!isObject(target)) return target
 		if (hash.get(target)) return target
 		const newObj = Array.isArray(target) ? [] : {}
