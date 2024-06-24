@@ -605,3 +605,138 @@ function inheritObject(o) {
 	console.log(obj, obj1)
 }
 //#endregion
+
+//#region reduce
+;(() => {
+	Array.prototype.Reduce = function (fn, initialValue) {
+		if (typeof fn !== 'function') {
+			throw new TypeError(`${fn} is not a function`)
+		}
+		let pre, index
+		let arr = this.slice()
+		if (initialValue === undefined) {
+			for (let i = 0; i < arr.length; i++) {
+				if (!arr.hasOwnProperty(i)) continue
+				pre = arr[i]
+				index = i + 1
+				break
+			}
+		} else {
+			pre = initialValue
+			index = 0
+		}
+		for (let i = index; i < arr.length; i++) {
+			if (!arr.hasOwnProperty(i)) continue
+			pre = fn.call(null, pre, arr[i], i, this)
+		}
+		return pre
+	}
+	console.log([, , , 1, 2, 3, 4].Reduce((pre, cur) => pre + cur))
+})()
+//#endregion
+
+//#region map
+;(() => {
+	Array.prototype.Map = function (fn, content) {
+		if (typeof fn !== 'function') {
+			throw new TypeError(`${fn} is not a function`)
+		}
+		let list = new Array(this.length)
+		for (let i = 0; i < this.length; i++) {
+			if (arr.hasOwnProperty(i)) {
+				list[i] = fn.call(content, this[i], i, this)
+			}
+		}
+		return list
+	}
+	console.log([1, 2, 3].Map((item) => item * 2))
+})()
+//#endregion
+
+//#region filter
+;(() => {
+	Array.prototype.Filter = function (fn, content) {
+		if (typeof fn !== 'function') {
+			throw new TypeError(`${fn} is not a function`)
+		}
+		let list = []
+		for (let i = 0; i < this.length; i++) {
+			if (fn.call(content, this[i], i, this)) {
+				list.push(this[i])
+			}
+		}
+		return list
+	}
+	console.log([1, 2, 3, 4].Filter((item) => item > 2))
+})()
+//#endregion
+
+//#region some
+;(() => {
+	Array.prototype.Some = function (fn) {
+		if (typeof fn !== 'function') {
+			throw new TypeError(`${fn} is not a function`)
+		}
+		let result = false
+		for (let i = 0; i < this.length; i++) {
+			if (fn(this[i])) {
+				result = true
+				break
+			}
+		}
+		return result
+	}
+	console.log([1, 2, 3].Some((item) => item > 2))
+})()
+//#endregion
+
+//#region every
+;(() => {
+	Array.prototype.Every = function (fn) {
+		if (typeof fn !== 'function') {
+			throw new TypeError(`${fn} is not a function`)
+		}
+		let result = false
+		let index = 0
+		for (let i = 0; i < this.length; i++) {
+			if (fn(this[i])) {
+				index++
+				if (index === this.length - 1) {
+					result = true
+				}
+			}
+		}
+		return result
+	}
+	console.log([1, 2, 3].Every((item) => item > 1))
+})()
+//#endregion
+
+//#region flat
+;(() => {
+	Array.prototype.Flat = function (deep) {
+		let arr = this.slice()
+		if (deep === 0) return arr
+		return arr.reduce((pre, cur) => {
+			if (Array.isArray(cur)) {
+				return [...pre, ...cur.Flat(deep - 1)]
+			} else {
+				return [...pre, cur]
+			}
+		}, [])
+	}
+	const arr1 = [0, 1, [2, [3, [4, 5]]]]
+	console.log(arr1.flat())
+	console.log(arr1.flat(2))
+	console.log(arr1.flat(Infinity))
+})()
+//#endregion
+
+//#region typeof
+;(() => {
+	function Typeof(context) {
+		return Object.prototype.call(context).splice(8, -1).toLowerCase()
+	}
+	console.log(Typeof(() => {}))
+})()
+//#endregion
