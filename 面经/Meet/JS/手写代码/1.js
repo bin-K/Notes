@@ -351,7 +351,7 @@ Array.prototype.Reduce = function (fn, initialValue) {
 	let arr = this.slice()
 	if (initialValue === undefined) {
 		for (let i = 0; i < arr.length; i++) {
-			if (!obj.hasOwnProperty(i)) continue
+			if (!arr.hasOwnProperty(i)) continue
 			pre = arr[i]
 			index = i + 1
 			break
@@ -361,7 +361,7 @@ Array.prototype.Reduce = function (fn, initialValue) {
 		index = 0
 	}
 	for (let i = index; i < arr.length; i++) {
-		if (!obj.hasOwnProperty(i)) continue
+		if (!arr.hasOwnProperty(i)) continue
 		pre = fn.call(null, pre, arr[i], i, this)
 	}
 	return pre
@@ -374,7 +374,7 @@ Array.prototype.Map = function (fn, context) {
 	let arr = this.slice()
 	let list = new Array(arr.length)
 	for (let i = 0; i < arr.length; i++) {
-		if (obj.hasOwnProperty(i)) {
+		if (arr.hasOwnProperty(i)) {
 			list[i] = fn.call(context, arr[i], i, this)
 		}
 	}
@@ -439,4 +439,87 @@ Array.prototype.Flat = function (deep) {
 
 function Typeof(context) {
 	return Object.prototype.toString.call(context).slice(8, -1).toLowerCase()
+}
+
+function compose(list) {
+	const init = list.shift()
+	return function (...args) {
+		return list.reduce((pre, cur) => {
+			return pre.then((res) => {
+				return cur.call(null, res)
+			})
+		}, Promise.resolve(init.apply(null, args)))
+	}
+}
+
+function curry(fn) {
+	if (fn.length <= 1) return fn
+	const generator = (...args) => {
+		if (fn.length === args.length) {
+			return fn(...args)
+		} else {
+			return (...args1) => {
+				return generator(...args, ...args1)
+			}
+		}
+	}
+	return generator
+}
+
+class Dep {
+	constructor() {
+		this.watcherList = []
+	}
+	add(node) {
+		this.watcherList.push(node)
+	}
+	update(value) {
+		this.watcherList.forEach((node) => {
+			node.textContent = value
+		})
+	}
+}
+
+class Vue {
+	constructor(options) {
+		this.options = options
+		this.$data = options.data
+		this.observe(options.data)
+		this.compile(document.querySelector(options.el))
+	}
+
+	observe(data) {
+		Object.keys(data).forEach((key) => {
+			const observe = new Dep()
+			const value = data[key]
+			Object.defineProperty(data, key, {
+				get() {
+					Dep.target && observe.add(Dep.target)
+					return value
+				},
+				set(newValue) {
+					observe.update(newValue)
+				},
+			})
+		})
+	}
+
+	compile(dom) {
+		const mustache = /\{\{(.*)\}\}/
+		dom.childNodes.forEach((child) => {
+			if (child.nodeType === 3 && mustache.test(child.textContent)) {
+				const keyNoTrim = mustache.exec(child.textContent)[1]
+				const key = keyNoTrim.trim()
+				Dep.target = child
+				child.textContent = child.textContent.replace(
+					`{{${keyNoTrim}}}`,
+					this.$data[key]
+				)
+				Dep.target = null
+			}
+			if (child.childNodes.length) {
+				this.compile(child)
+			}
+		})
+	}
 }
