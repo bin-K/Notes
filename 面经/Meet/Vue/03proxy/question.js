@@ -11,24 +11,50 @@ window.onload = function () {
 		},
 	})
 	setTimeout(() => {
-		vue.$data.info.person.name = '小明'
+		vue.info.person.name = '小明'
 	}, 2000)
 }
 
 class Dep {
-	watcherList = []
-	add(node) {
-		this.watcherList.push(node)
+	watcherList = new Map()
+	add(key, node) {
+		this.watcherList.set(key, node)
 	}
-	update(value) {
-		console.log(value, this.watcherList, 1111)
-		this.watcherList.forEach((node) => {
-			console.log(node, 1)
+	update(key, value) {
+		if (this.watcherList.size) {
+			const node = this.watcherList.get(key)
 			if (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA') {
 				node.value = value
 			} else {
 				node.textContent = value
 			}
+		}
+	}
+}
+
+function observe(data) {
+	if (!data || typeof data !== 'object') return data
+	return new Observe(data)
+}
+
+class Observe {
+	constructor(data) {
+		for (let key in data) {
+			data[key] = observe(data[key])
+		}
+		return this.proxy(data)
+	}
+	proxy(data) {
+		const dep = new Dep()
+		return new Proxy(data, {
+			get: (target, key, receiver) => {
+				Dep.target && dep.add(key, Dep.target)
+				return Reflect.get(target, key, receiver)
+			},
+			set: (target, key, value) => {
+				dep.update(key, value)
+				return Reflect.set(target, key, observe(value))
+			},
 		})
 	}
 }
@@ -37,30 +63,9 @@ class Vue {
 	constructor(options) {
 		this.options = options
 		this.$el = document.querySelector(options.el)
-		this.$data = this.observe(options.data)
+		this.$data = observe(options.data)
 		this.compile(this.$el, this)
-		// this.proxy(this.$data, this)
-	}
-
-	observe(data) {
-		const _this = this
-		const dep = new Dep()
-		return new Proxy(data, {
-			get(target, key) {
-				const result = Reflect.get(target, key)
-				if (result && typeof result === 'object') {
-					return _this.observe(result)
-				} else {
-					Dep.target && dep.add(Dep.target)
-					return result
-				}
-			},
-			set(target, key, value) {
-				console.log(value)
-				dep.update(value)
-				return Reflect.set(target, key, value)
-			},
-		})
+		this.proxy(this.$data, this)
 	}
 
 	compile(dom, vm) {
@@ -85,9 +90,8 @@ class Vue {
 				let value = vm.$data
 				Dep.target = child
 				keyList.forEach((item) => (value = value[item]))
-				console.log(value)
 				child.textContent = child.textContent.replace(`{{${keyNoTrim}}}`, value)
-				Dep.tagName = null
+				Dep.target = null
 			}
 			if (child.childNodes.length) {
 				this.compile(child, vm)
@@ -97,20 +101,9 @@ class Vue {
 
 	// this代理 this.$data
 	// vm.info.person.name 相当于 vm.$data.info.person.name
-	// proxy($data, vm) {
-	// 	Object.keys($data).forEach((dataKey) => {
-	// 		vm[dataKey] = $data[dataKey]
-	// 		return new Proxy(vm, {
-	// 			get(target, key) {
-	// 				console.log(target, key, 1)
-	// 				const result = Reflect.get(target, key)
-	// 				return result
-	// 			},
-	// 			set(target, key, value) {
-	// 				console.log(target, key, value, 1)
-	// 				Reflect.set(target, key, value)
-	// 			},
-	// 		})
-	// 	})
-	// }
+	proxy($data, vm) {
+		Object.keys($data).forEach((key) => {
+			vm[key] = observe($data[key])
+		})
+	}
 }
