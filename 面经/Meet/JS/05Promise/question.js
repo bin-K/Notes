@@ -33,14 +33,24 @@
 		}
 
 		then(onResolveCallback, onRejectCallback) {
+			onResolveCallback = onResolveCallback
+				? onResolveCallback
+				: (value) => value
+			onRejectCallback = onRejectCallback
+				? onRejectCallback
+				: (error) => {
+						throw error
+				  }
 			return new MyPromise((resolve, reject) => {
 				this.resolveTask.push(() => {
-					const res = onResolveCallback(this.data)
-					if (res instanceof MyPromise) {
-						res.then(resolve, reject)
-					} else {
-						resolve(res)
-					}
+					setTimeout(() => {
+						const res = onResolveCallback(this.data)
+						if (res instanceof MyPromise) {
+							res.then(resolve, reject)
+						} else {
+							resolve(res)
+						}
+					})
 				})
 				this.rejectTask.push(() => {
 					const res = onRejectCallback(this.error)
@@ -76,7 +86,7 @@
 			})
 		}
 
-		static resolve = (error) => {
+		static reject = (error) => {
 			return new MyPromise((resolve, reject) => {
 				if (error instanceof MyPromise) {
 					error.then(resolve, reject)
@@ -143,7 +153,33 @@
 			})
 		}
 	}
+	// 与原生的Promise的差别 1 2 4 3 5 6
+	// 原生Promise 执行Priomise.resolve会慢两步
+	MyPromise.resolve()
+		.then(() => {
+			console.log(0)
+			return MyPromise.resolve(4)
+		})
+		.then((res) => {
+			console.log(res)
+		})
 
+	MyPromise.resolve()
+		.then(() => {
+			console.log(1)
+		})
+		.then(() => {
+			console.log(2)
+		})
+		.then(() => {
+			console.log(3)
+		})
+		.then(() => {
+			console.log(5)
+		})
+		.then(() => {
+			console.log(6)
+		})
 	// 打印结果：依次打印1、2
 	new MyPromise((resolve, reject) => {
 		setTimeout(() => {

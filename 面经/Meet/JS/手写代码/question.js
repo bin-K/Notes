@@ -740,3 +740,44 @@ function inheritObject(o) {
 	console.log(Typeof(() => {}))
 })()
 //#endregion
+
+//#region compose
+// 上一个函数的执行结果作为下一个函数的参数
+;(() => {
+	function compose(list) {
+		const init = list.shift()
+		return function (...args) {
+			return list.reduce((pre, cur) => {
+				pre.then((res) => {
+					return cur.call(null, res)
+				})
+			}, Promise.resolve(init.apply(null, args)))
+		}
+	}
+})()
+//#endregion
+
+//#region curry
+// 函数柯里化 fn(1, 2, 3, 4) => fn(1)(2)(3)(4)
+;(() => {
+	function curry(fn) {
+		if (fn.length <= 1) return fn
+		const generator = (...args) => {
+			if (fn.length === args.length) {
+				return fn(...args)
+			} else {
+				return (...args1) => {
+					return generator(...args, ...args1)
+				}
+			}
+		}
+		return generator
+	}
+
+	function fn(a, b, c, d) {
+		return a + b + c + d
+	}
+	const fnc = curry(fn)
+	console.log(fnc(1)(2)(3)(4))
+})()
+//#endregion

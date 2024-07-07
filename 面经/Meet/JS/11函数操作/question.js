@@ -65,7 +65,7 @@
 	composeFn(0).then((res) => {
 		console.log(res)
 	})
-	// 依次打印 async1 → async1 → async1 → 3
+	// 依次打印 async1 → async2 → async3 → 3
 })()
 
 //#endregion
