@@ -1,19 +1,60 @@
 /**
- * *宏任务
-      分类:setTimeout setInterval requestAnimationFrame
+ * 事件轮询机制 Event loop
+ * 	JS的一大特点是单线程，所有任务都得排队，前一个任务结束，后一个任务才会执行，如果前一个任务执行时间过长，后一个任务就不得不等着
+ * 		这里的任务分为两种： 宏任务 和 微任务
+ * 		当宏任务执行完成后，会判断微任务队列中是否有任务，如果有，则把微任务放到主线程中并执行，如果没有，执行下一个宏任务
+ * *宏任务：在主线程上排队执行的任务，前一个任务执行完毕，才能执行下一个任务
+      分类:script全部代码（注意同步代码也属于宏任务）、setTimeout、setInterval、setImmediate、requestAnimationFrame （task 任务源）
       1.宏任务所处的队列就是宏任务队列
       2.第一个宏任务队列中只有一个任务:执行主线程的js代码
       3．宏任务队列可以有多个
       4．当宏任务队列的中的任务压部执行完以后会查看是否有微任务队列如果有先执行微任务队列中的所有任务，
           最后再执行宏任务队列中的函数
-
-*
-*   微任务
-        分类:new Promise( ).then(回调) process.nextTick
+*   微任务：不进入主线程，进入微任务队列的任务
+        分类:new Promise( ).then(回调) process.nextTick、MutationObserver
         1．微任务所处的队列就是微任务队列
         2．只有一个微任务队列
         3．在上一个宏任务队列执行完毕后如果有微任务队列就会执行微任务队列中的所有任务
+		事件轮询机制的执行过程
+			1、代码执行过程中，宏任务和微任务分别放在不同的队列中
+			2、当某个宏任务执行完成后，会查看微任务队列是否任务，如果有，执行微任务队列中的所有微任务
+			3、微任务执行完成后，读取宏任务队列中排在第一个的宏任务（注意宏任务是一个一个读取），执行该宏任务，执行过程中遇到微任务，依次加入到微任务队列
+			4、宏任务执行完成，再次读取微任务队列中的微任务，并执行，以此类推
+		举个简单的例子，假设一个script标签的代码如下：
+			Promise.resolve().then(function promise1 () {
+       console.log('promise1');
+    	})
+			setTimeout(function setTimeout1 (){
+					console.log('setTimeout1')
+					Promise.resolve().then(function  promise2 () {
+						console.log('promise2');
+					})
+			}, 0)
 
+			setTimeout(function setTimeout2 (){
+				console.log('setTimeout2')
+			}, 0)
+
+		script里的代码被列为一个task，放入task队列。
+
+		循环1：
+
+			【task队列：script ；microtask队列：】
+				从task队列中取出script任务，推入栈中执行。
+				promise1列为microtask，setTimeout1列为task，setTimeout2列为task。
+			【task队列：setTimeout1 setTimeout2；microtask队列：promise1】
+				script任务执行完毕，执行microtask checkpoint，取出microtask队列的promise1执行。
+		循环2：
+
+			【task队列：setTimeout1 setTimeout2；microtask队列：】
+				从task队列中取出setTimeout1，推入栈中执行，将promise2列为microtask。
+			【task队列：setTimeout2；microtask队列：promise2】
+				执行microtask checkpoint，取出microtask队列的promise2执行。
+		循环3：
+			【task队列：setTimeout2；microtask队列：】
+				从task队列中取出setTimeout2，推入栈中执行。
+				setTimeout2任务执行完毕，执行microtask checkpoint。
+			【task队列：；microtask队列：】
  */
 
 //#region 1
@@ -109,49 +150,36 @@
 }
 //#endregion
 
-//#region node事件轮询
+//#region 4
 ;(() => {
-	/**
- * 
- * process.nextTick()
-   setTimeout()
-   setImmediate()
-
-   nodejs的事件轮询机制 :借助libnv库实现的
-   概括事件轮询机制,分为六个阶段
-   1. timers定时器阶段
-      计时和执行到点的定时器回调函数
-  2. pending callbacks
-      某些系统操作（例如TCP错误类型）的回调函数
-  3. idle， prepare
-      准备工作
-  4. poll轮询阶段(轮询队列)
-      如果轮询队列不为空，依次同步取出轮询队列中第一个回调函数执行，直到轮询队列为空或者达到系统最大的限制
-      如果轮询队列为空
-        如果之前设置过setImmediate函数
-            直接进入下一个check阶段
-        如果之前没有设置过setImmediate函数
-          在当前poll阶段等待直到轮询队列添加回调函数，就去第一个情况执行
-        如果定时器到点了，也会去下一个阶段
-  5. check查阶段
-      执行setImmediate设置的回调函数
-  6. close callbacks
-      关闭阶段执行close事件回调函数
-
-  process.nextTick能在任意阶段优先执行
-
- */
-
-	setTimeout(() => {
-		console.log('setTimeout()')
-	}, 0)
-
-	setImmediate(() => {
-		console.log('setImmediate()')
-	})
-
-	process.nextTick(() => {
-		console.log('process.nextTick()')
-	})
+	Promise.resolve()
+		.then(() => {
+			console.log(0)
+			return Promise.resolve(4)
+		})
+		.then((res) => {
+			console.log(res)
+		})
+	Promise.resolve()
+		.then(() => {
+			console.log(1)
+		})
+		.then(() => {
+			console.log(2)
+		})
+		.then(() => {
+			console.log(3)
+		})
+		.then(() => {
+			console.log(5)
+		})
+		.then(() => {
+			console.log(6)
+		})
+	/* 
+		依次打印 1 2 3 4 5 6
+		按照正常的执行逻辑 如果不return Promise.resolve, 俩个Promise.resolve()的then会依次交叉打印，
+		但每return Promise.resolve 会使得下一次打印慢两步
+	*/
 })()
 //#endregion
