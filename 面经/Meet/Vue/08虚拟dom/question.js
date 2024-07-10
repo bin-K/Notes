@@ -14,6 +14,10 @@
 		if (!dom.tagName) return
 		let obj = {}
 		obj.tag = dom.tagName
+		obj.props = {}
+		Array.from(dom.attributes).forEach((attr) => {
+			obj.props[attr.name] = attr.value
+		})
 		obj.children = []
 		dom.childNodes.forEach((item) => {
 			// 去除空的节点

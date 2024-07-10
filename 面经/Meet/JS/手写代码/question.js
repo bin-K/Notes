@@ -781,3 +781,183 @@ function inheritObject(o) {
 	console.log(fnc(1)(2)(3)(4))
 })()
 //#endregion
+
+//#region v-model
+;(() => {
+	class Dep {
+		watchList = []
+		add(node) {
+			this.watchList.push(node)
+		}
+		update(value) {
+			this.watchList.forEach((node) => {
+				if (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA') {
+					node.value = value
+				} else {
+					node.textContent = value
+				}
+			})
+		}
+	}
+
+	class Vue {
+		constructor(options) {
+			this.options = options
+			this.$data = options.data
+			this.$el = document.querySelector(options.el)
+			this.observe(this.$data)
+			this.compile(this.$el, this)
+			this.proxy(this.$data, this)
+		}
+
+		observe($data) {
+			if ($data && typeof $data === 'object') {
+				const _this = this
+				Object.keys($data).forEach((key) => {
+					const dep = new Dep()
+					let value = $data[key]
+					_this.observe(value)
+					Object.defineProperty($data, key, {
+						get() {
+							Dep.target && dep.add(Dep.target)
+							return value
+						},
+						set(newValue) {
+							_this.observe(newValue)
+							value = newValue
+							dep.update(newValue)
+						},
+					})
+				})
+			}
+		}
+		compile(dom, vm) {
+			const mustache = /\{\{(.*)\}\}/
+			Array.from(dom.childNodes).forEach((child) => {
+				if (child.nodeType === 1) {
+					Array.from(child.attributes).forEach((attr) => {
+						if (attr.name.includes('v-model')) {
+							Dep.target = child
+							child.value = vm.$data[attr.value]
+							Dep.target = null
+							child.addEventListener('input', (e) => {
+								vm.$data[attr.value] = e.target.value
+							})
+						}
+					})
+				}
+				if (child.nodeType === 3 && mustache.test(child.textContent)) {
+					const key = mustache.exec(child.textContent)[1].trim()
+					const keyNoTrim = mustache.exec(child.textContent)[1]
+					const keyList = key.split('.')
+					let value = vm.$data
+					keyList.forEach((item) => (value = value[item]))
+					Dep.target = child
+					child.textContent = child.textContent.replace(
+						`{{${keyNoTrim}}}`,
+						value
+					)
+					Dep.target = null
+				}
+				if (child.childNodes.length) {
+					this.compile(child, vm)
+				}
+			})
+		}
+		proxy($data, vm) {
+			Object.keys($data).forEach((key) => {
+				Object.defineProperty(vm, key, {
+					get() {
+						return $data[key]
+					},
+					set(newValue) {
+						$data[key] = newValue
+					},
+				})
+			})
+		}
+	}
+})()
+//#endregion
+
+//#region proxy
+;(() => {
+	function observe(target) {
+		if (typeof target === 'object' && target) {
+			return new Observe(target)
+		} else {
+			return target
+		}
+	}
+
+	function Observe(data) {
+		return new Proxy(data, {
+			get(target, key, receiver) {
+				const result = Reflect.get(target, key, receiver)
+				return observe(result)
+			},
+			set(target, key, value, receiver) {
+				return Reflect.set(target, key, value, receiver)
+			},
+		})
+	}
+
+	let target = { name: 'test', info: { age: 20 } }
+	let pro = observe(target)
+	pro.info.age = 18
+})()
+//#endregion
+
+//#region 虚拟DOM和真实DOM转换
+;(() => {
+	class Element {
+		constructor(tag, props, children) {
+			this.tag = tag
+			this.props = props
+			this.children = children
+		}
+	}
+
+	function dom2Json(dom) {
+		if (!dom.tagName) return
+		let obj = {}
+		obj.tag = dom.tagName
+		obj.props = {}
+		obj.children = []
+		Array.from(dom.attributes).forEach((attr) => {
+			obj.props[attr.name] = attr.value
+		})
+		dom.childNodes.forEach((item) => {
+			dom2Json(item) && obj.children.push(dom2Json(item))
+		})
+	}
+
+	function render(domObj) {
+		let el = dom.querySelector(domObj.tag)
+		Object.keys(domObj.props).forEach((key) => {
+			let value = domObj.props[key]
+			switch (key) {
+				case 'value':
+					if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+						el.value = value
+					} else {
+						el.setAttribute(key, value)
+					}
+					break
+				case 'class':
+					el.style.cssText = value
+					break
+				default:
+					el.setAttribute(key, value)
+			}
+		})
+		domObj.children.forEach((child) => {
+			child =
+				child instanceof Element
+					? render(child)
+					: document.createTextNode(child)
+		})
+		return el
+	}
+})()
+//#endregion
