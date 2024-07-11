@@ -961,3 +961,32 @@ function inheritObject(o) {
 	}
 })()
 //#endregion
+
+//#region setTimeout -> setInterval
+;(() => {
+	function mySetInterval(fn, t) {
+		let timer = null
+		function interval() {
+			fn()
+			timer = setTimeout(interval, t)
+		}
+		interval()
+		return {
+			cancel() {
+				clearTimeout(timer)
+			},
+		}
+	}
+})()
+//#endregion
+
+//#region setInterval -> setTimeout
+;(() => {
+	function mySetTimeout(fn, t) {
+		let timer = setInterval(() => {
+			clearInterval(timer)
+			fn()
+		}, t)
+	}
+})()
+//#endregion

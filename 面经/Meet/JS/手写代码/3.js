@@ -100,7 +100,7 @@
 })()
 //#endregion
 
-///#region Proxy
+//#region Proxy
 ;(() => {
 	function Observe(data) {
 		return new Proxy(data, {
