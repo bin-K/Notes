@@ -1,3 +1,11 @@
+//#region for...in和for...of的区别
+/* 
+	for…of 遍历获取的是对象的键值，for…in 获取的是对象的键名；
+	for… in 会遍历对象的整个原型链，性能非常差不推荐使用，而 for … of 只遍历当前对象不会遍历原型链；
+	对于数组的遍历，for…in 会返回数组中所有可枚举的属性(包括原型链上可枚举的属性)，for…of 只返回数组的下标对应的属性值；
+*/
+//#endregion
+
 //#region reduce
 ;(() => {
 	Array.prototype.Reduce = function (fn, initialValue) {

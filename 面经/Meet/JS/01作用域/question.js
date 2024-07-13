@@ -1,4 +1,4 @@
-//作用域和值类型引用类型的值传递
+//#region 作用域和值类型引用类型的值传递
 ;(() => {
 	// 1、作用域
 	var num1 = 55
@@ -23,6 +23,7 @@
 	console.log(num2) //100，全局变量num2在函数种被改为了100
 	// console.log(num); //not define 报错
 })()
+//#endregion
 ;(() => {
 	//第2题值类型和引用类型的传递
 	function Person(name, age, salary) {
