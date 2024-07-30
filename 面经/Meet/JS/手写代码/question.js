@@ -172,10 +172,10 @@ function throttleSetTimeout(fn, delay) {
 // 缺点: 引用类型的属性会被所有的实例共享
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 	}
 	function SubClass() {}
 
@@ -195,10 +195,10 @@ function throttleSetTimeout(fn, delay) {
 // 缺点：无法访问父类的原型对象
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 	}
 	function SubClass() {
 		SuperClass.call(this)
@@ -222,10 +222,10 @@ function throttleSetTimeout(fn, delay) {
 // 缺点：父类构造函数会执行两次
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 		console.log('组合式继承 父类执行了')
 	}
 	function SubClass() {
@@ -256,10 +256,10 @@ function inheritObject(o) {
 // 寄生式继承
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 		console.log('寄生式继承 父类执行了')
 	}
 	SuperClass.prototype.super = 'prototype'
@@ -289,10 +289,10 @@ function inheritObject(o) {
 // 寄生组合式继承
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 		console.log('寄生组合式继承 父类执行了')
 	}
 	function SubClass() {
