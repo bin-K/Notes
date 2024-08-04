@@ -88,7 +88,7 @@
 		}
 		let result = false
 		for (let i = 0; i < this.length; i++) {
-			if (fn(this[i])) {
+			if (fn(this[i], i)) {
 				result = true
 				break
 			}
@@ -110,7 +110,7 @@
 		let result = false
 		let index = 0
 		for (let i = 0; i < this.length; i++) {
-			if (fn(this[i])) {
+			if (fn(this[i], i)) {
 				index++
 				if (index === this.length - 1) {
 					result = true

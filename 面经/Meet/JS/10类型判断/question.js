@@ -39,6 +39,116 @@
 */
 //#endregion
 
+//#region 类型转换
+// 当a等于什么的时候能使下面的条件成立
+// var a = ?
+// if (a == 1 && a == 2 && a == 3) {
+//   console.log(1);
+// }
+
+/**
+ *  == 的转换规则
+ * 
+ *  对象==字符串 对象.toString
+
+    null==undefined 相等 但是和其他值不相等
+
+    NaN！=NaN
+
+    剩下的都转换成数字
+ */
+// 对象==字符串 对象.toString
+// 利用这个思想，将a写为一个对象，并且重写其toSrting方法，在第一次执行的时候返回1
+// 在第二次执行的时候返回2，第三次执行的时候返回3，使条件成立
+/*var a = {
+  i:1,
+  toString() {
+    if (i = 1) {
+      return this.i++
+    } else if (i = 2) {
+      return this.i++
+    } else {
+      return this.i
+    }
+  }
+}*/
+
+// 利用Object.defineProperty进行数据劫持
+// var i = 0
+// Object.defineProperty(window, 'a', {
+//   get() {
+//     return ++i
+//   }
+// })
+
+// 数组弹出
+var a = [1, 2, 3]
+a.toString = a.shift
+
+if (a == 1 && a == 2 && a == 3) {
+	console.log('成立')
+}
+
+//#endregion
+
+//#region 数组、对象
+;() => {
+	let a = {},
+		b = '0',
+		c = 0
+	a[b] = '法外狂徒'
+	a[c] = '张三'
+	console.log(a[b]) //张三
+	/*
+a[b] = '法外狂徒';执行时
+a = {
+  '0' :'法外狂徒'
+}
+a[c] = '张三';执行时
+注意：在对象中，属性名时数字的时候会被转换字符串，对象名可以时函数，布尔值，null，undefined等等
+但是最后展示的时候都会将他们转换为字符串
+因此，a[0] => a['0'],
+对象中已经存在该属性了，因此，会被张三重新赋值
+
+*/
+}
+;() => {
+	let a = {},
+		b = Symbol('1'),
+		c = Symbol('1')
+	a[b] = '法外狂徒'
+	a[c] = '张三'
+	console.log(a[b]) //法外狂徒
+	/**
+	 * 这里需要知道Symbol创建的值是唯一的，即使同时创建Symbol('1')，它们也不相等
+	 * 此时a对象
+	 * a = {
+	 *    [Symbol(1)]:'法外狂徒',
+	 *    [Symbol(1)]:'张三'
+	 * }
+	 */
+}
+;() => {
+	let a = {},
+		b = {
+			n: '1',
+		},
+		c = {
+			m: '2',
+		}
+	a[b] = '法外狂徒'
+	a[c] = '张三'
+	console.log(a[b]) //张三
+	/**
+	 * 注意：这里的属性名是一个对象，在放入a对象之后，
+	 * 只要属性名是一个对象，都会转换为[Object object]
+	 * 因此，这两个值在a中是相等的
+	 *
+	 */
+}
+
+//#endregion
+
 //#region typeof
 ;(() => {
 	function Typeof(context) {
