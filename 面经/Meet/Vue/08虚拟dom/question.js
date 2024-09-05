@@ -51,7 +51,7 @@
 					el.style.cssText = value
 					break
 				default:
-					el.setAttribute(ket, value)
+					el.setAttribute(key, value)
 			}
 		})
 		domObj.childeren.forEach((child) => {

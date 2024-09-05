@@ -130,10 +130,10 @@ function createObject(o) {
 	return p
 }
 
-function inheritProtype(SuperClass, SubClass) {
+function inheritPrototype(SuperClass, SubClass) {
 	let p = inheritObject(SuperClass.prototype)
-	p.prototype = SubClass
-	SubClass.constructor = p
+	SubClass.prototype = p
+	p.constructor = SubClass
 }
 
 class MyPromise {
@@ -141,7 +141,7 @@ class MyPromise {
 		this.state = 'pending'
 		this.data = undefined
 		this.error = undefined
-		this.resovleTask = []
+		this.resloveTask = []
 		this.rejectTask = []
 
 		try {
@@ -150,46 +150,46 @@ class MyPromise {
 			this.reject(e)
 		}
 	}
+
 	resolve = (value) => {
 		if (this.state !== 'pending') return
 		this.state = 'fulfilled'
 		this.data = value
 		setTimeout(() => {
-			this.resovleTask.forEach((cb) => cb())
+			this.resloveTask.forEach((cb) => cb())
 		})
 	}
 
 	reject = (error) => {
 		if (this.state !== 'pending') return
+		this.state = 'rejected'
 		this.error = error
 		setTimeout(() => {
 			this.rejectTask.forEach((cb) => cb())
 		})
 	}
 
-	then = (onResloved, onReject) => {
-		onResloved =
-			typeof onResloved === 'function' ? onResloved : (value) => value
+	then = (onReslove, onReject) => {
+		onReslove = typeof onReslove === 'function' ? onReslove : (value) => value
 		onReject =
 			typeof onReject === 'function'
 				? onReject
 				: (error) => {
 						throw error
 				  }
-
-		return new MyPromise((reslove, reject) => {
-			this.resovleTask.push(() => {
-				const res = onResloved(this.data)
+		return new MyPromise((resolve, reject) => {
+			this.resloveTask.push(() => {
+				const res = onReslove(this.data)
 				if (res instanceof MyPromise) {
-					res.then(reslove, reject)
+					res.then(resolve, reject)
 				} else {
-					reslove(res)
+					resolve(res)
 				}
 			})
 			this.rejectTask.push(() => {
 				const res = onReject(this.error)
 				if (res instanceof MyPromise) {
-					res.then(reslove, reject)
+					res.then(resolve, reject)
 				} else {
 					reject(res)
 				}
@@ -201,20 +201,20 @@ class MyPromise {
 		this.then(undefined, onReject)
 	}
 
-	static reslove = (value) => {
-		return new MyPromise((reslove, reject) => {
+	static resolve = (value) => {
+		return new MyPromise((resolve, reject) => {
 			if (value instanceof MyPromise) {
-				value.then(reslove, reject)
+				value.then(resolve, reject)
 			} else {
-				reslove(value)
+				resolve(value)
 			}
 		})
 	}
 
 	static reject = (error) => {
-		return new MyPromise((reslove, reject) => {
+		return new MyPromise((resolve, reject) => {
 			if (error instanceof MyPromise) {
-				error.then(reslove, reject)
+				error.then(resolve, reject)
 			} else {
 				reject(error)
 			}
@@ -222,11 +222,11 @@ class MyPromise {
 	}
 
 	static race = (promises) => {
-		return new MyPromise((reslove, reject) => {
+		return new MyPromise((resolve, reject) => {
 			for (let i = 0; i < promises.length; i++) {
-				MyPromise.reslove(promises[i]).then(
+				MyPromise.resolve(promises[i]).then(
 					(res) => {
-						reslove(res)
+						resolve(res)
 					},
 					(err) => {
 						reject(err)
@@ -237,16 +237,16 @@ class MyPromise {
 	}
 
 	static all = (promises) => {
-		let index = 0
 		const result = []
-		return new MyPromise((reslove, reject) => {
+		let index = 0
+		return new MyPromise((resolve, reject) => {
 			for (let i = 0; i < promises.length; i++) {
-				MyPromise.reslove(promises[i]).then(
+				MyPromise.resolve(promises[i]).then(
 					(res) => {
 						result[i] = res
 						index++
 						if (index === promises.length) {
-							reslove(result)
+							resolve(result)
 						}
 					},
 					(err) => {
@@ -258,11 +258,11 @@ class MyPromise {
 	}
 
 	static retry = (fn, times, wait) => {
-		return new MyPromise((reslove, reject) => {
+		return new MyPromise((resolve, reject) => {
 			function func() {
-				MyPromise.prototype(fn()).then(
+				MyPromise.resolve(fn()).then(
 					(res) => {
-						reslove(res)
+						resolve(res)
 					},
 					(err) => {
 						if (times > 0) {
@@ -282,7 +282,7 @@ class MyPromise {
 function asyncToGenerator(generatorFunc) {
 	return function (...args) {
 		const gen = generatorFunc.apply(this, args)
-		return new Promise((reslove, reject) => {
+		return new Promise((resolve, reject) => {
 			function step(key, arg) {
 				let generatorResult
 				try {
@@ -292,18 +292,16 @@ function asyncToGenerator(generatorFunc) {
 				}
 
 				const { value, done } = generatorResult
-
 				if (done) {
-					reslove(value)
+					resolve(value)
 				} else {
-					Promise.resolve(value).then(
-						(res) => {
+					Promise.resolve(value)
+						.then((res) => {
 							step('next', res)
-						},
-						(err) => {
+						})
+						.catch((err) => {
 							step('throw', err)
-						}
-					)
+						})
 				}
 			}
 			step('next')
@@ -333,7 +331,7 @@ function deepClone(obj) {
 
 function deepCloneWeakMap(target, hash = new WeakMap()) {
 	const isObject = (obj) => typeof obj === 'object' && obj !== null
-	if (isObject(target)) return target
+	if (!isObject(target)) return target
 	if (hash.get(target)) return hash.get(target)
 	const newObj = Array.isArray(target) ? [] : {}
 	hash.set(target, newObj)
