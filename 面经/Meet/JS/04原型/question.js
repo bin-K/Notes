@@ -1,3 +1,28 @@
+//#region
+/* 
+	原型的作用：原型被定义为给其它对象提供共享属性的对象，函数的实例可以共享原型上的属性和方法
+	原型链:
+		它的作用就是当你在访问一个对象上属性的时候，
+		如果该对象内部不存在这个属性，那么就会去它__proto__属性所指向的对象（原型对象）上查找。
+		如果原型对象依旧不存在这个属性，那么就会去其原型的__proto__属性所指向的原型对象上去查找。
+		以此类推，直到找到null，而这个查找的线路，也就构成了我们常说的原型链
+	原型链和作用域的区别： 原型链是查找对象上的属性，作用域链是查找当前上下文中的变量
+*/
+//#endregion
+
+//#region proto、prototype、constructor属性介绍
+/* 
+	1）js中对象分为两种，普通对象和函数对象
+	2）__proto__和constructor是对象独有的。
+		prototype属性是函数独有的，它的作用是包含可以给特定类型的所有实例提供共享的属性和方法；
+		但是在 JS 中，函数也是对象，所以函数也拥有__proto__和 constructor属性
+	3）constructor属性是对象所独有的，它是一个对象指向一个函数，这个函数就是该对象的构造函数
+		构造函数.prototype.constructor === 该构造函数本身
+	4）一个对象的__proto__指向其构造函数的prototype
+		函数创建的对象.__proto__ === 该函数.prototype
+*/
+//#endregion
+
 //#region 原型和原型链
 ;(() => {
 	function Foo() {}
@@ -70,10 +95,10 @@
 // 缺点：引用类型的属性会被所有的实例共享
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 	}
 	function SubClass() {}
 
@@ -93,10 +118,10 @@
 //#region 构造函数继承
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 	}
 	function SubClass() {
 		SuperClass.call(this)
@@ -122,10 +147,10 @@
 // 缺点：父类构造函数会执行两遍
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 		console.log('组合式继承 父类执行了')
 	}
 	function SubClass() {
@@ -159,10 +184,10 @@ function inheritObject(o) {
 //#region 寄生式继承
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 		console.log('寄生式继承 父类执行了')
 	}
 	SuperClass.prototype.super = 'prototype'
@@ -193,10 +218,10 @@ function inheritObject(o) {
 //#region 寄生组合式继承
 ;(() => {
 	function SuperClass() {
-		;(this.name = 'Super'),
-			(this.info = {
-				child: 'Sub',
-			})
+		this.name = 'Super'
+		this.info = {
+			child: 'Sub',
+		}
 		console.log('寄生组合式继承 父类执行了')
 	}
 	function SubClass() {

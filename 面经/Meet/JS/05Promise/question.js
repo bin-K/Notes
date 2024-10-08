@@ -120,7 +120,7 @@
 						(res) => {
 							result[i] = res
 							index++
-							if (index === promises.length) {
+							if (index === promises.length - 1) {
 								reslove(result)
 							}
 						},
@@ -210,7 +210,7 @@
   generator函数是不会自动执行的，每一次调用它的next方法，会停留在下一个yield的位置
 */
 ;(() => {
-	function asyncToGenerator(generatorFunc) {
+	function generatorToAsync(generatorFunc) {
 		// 返回的是一个新的函数
 		return function () {
 			// 先调用generator函数 生成迭代器
@@ -218,7 +218,7 @@
 			const gen = generatorFunc.apply(this, arguments)
 
 			// 返回一个promise 因为外部是用.then的方式 或者await的方式去使用这个函数的返回值的
-			// var test = asyncToGenerator(testG)
+			// var test = generatorToAsync(testG)
 			// test().then(res => console.log(res))
 			return new Promise((resolve, reject) => {
 				// 内部定义一个step函数 用来一步一步的跨过yield的阻碍
@@ -284,7 +284,7 @@
 	// 1秒后打印data1 再过一秒打印data2 最后打印success
 	const getData = () =>
 		new Promise((resolve) => setTimeout(() => resolve('data'), 1000))
-	const test = asyncToGenerator(function* testG() {
+	const test = generatorToAsync(function* testG() {
 		// await被编译成了yield
 		const data = yield getData()
 		console.log('data1: ', data)
