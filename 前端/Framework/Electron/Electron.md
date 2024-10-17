@@ -413,4 +413,6 @@
     }
     ```
 
-    
+- electron-builder打包慢解决方法
+
+  - [electron-builder 打包太慢解决方法build过程耗时较长，可以手动下载部分文件。镜像地址 https:/ - 掘金 (juejin.cn)](https://juejin.cn/post/7221347166819500089)
